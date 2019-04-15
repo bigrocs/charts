@@ -23,6 +23,41 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MARIADB_HOST
+            {{- if .Values.mariadb.enabled }}
+              value: {{ template "mariadb.fullname" . }}
+            {{- else }}
+              value: {{ .Values.externalDatabase.host | quote }}
+            {{- end }}
+            - name: MARIADB_PORT_NUMBER
+            {{- if .Values.mariadb.enabled }}
+              value: "3306"
+            {{- else }}
+              value: {{ .Values.externalDatabase.port | quote }}
+            {{- end }}
+            - name: XLWG_DATABASE_NAME
+            {{- if .Values.mariadb.enabled }}
+              value: {{ .Values.mariadb.db.name | quote }}
+            {{- else }}
+              value: {{ .Values.externalDatabase.database | quote }}
+            {{- end }}
+            - name: XLWG_DATABASE_USER
+            {{- if .Values.mariadb.enabled }}
+              value: {{ .Values.mariadb.db.user | quote }}
+            {{- else }}
+              value: {{ .Values.externalDatabase.user | quote }}
+            {{- end }}
+            - name: XLWG_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                {{- if .Values.mariadb.enabled }}
+                  name: {{ template "mariadb.fullname" . }}
+                  key: mariadb-password
+                {{- else }}
+                  name: {{ printf "%s-%s" .Release.Name "externaldb" }}
+                  key: db-password
+                {{- end }}
           ports:
             - name: http
               containerPort: 80
