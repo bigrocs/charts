@@ -12,6 +12,22 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+externalDatabase:
+## All of these values are only used when mariadb.enabled is set to false
+  ## Database host
+  host: localhost
+
+  ## non-root Username for Wordpress Database
+  user: bn_xilewanggou
+
+  ## Database password
+  password: ""
+
+  ## Database name
+  database: bitnami_xilewanggou
+
+  ## Database port number
+  port: 3306
 ##
 ## MariaDB chart configuration
 ##
